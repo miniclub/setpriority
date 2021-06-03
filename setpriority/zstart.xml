@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Routine name="%ZSTART" type="MAC" languagemode="0"><![CDATA[
+ #include %syPidtab
+SYSTEM
+ do ##class(%ZUtils.Manager).Startup()
+ if $data(^%SYS("DEJOURNALING","NumPrefetch"))&&(##class(%File).Exists($SYSTEM.Util.BinaryDirectory()_"setpriority.exe")) {
+	 set rs=##class(%ResultSet).%New("%SYS.ProcessQuery:AllFields")
+	 set ret=rs.Execute()
+	 while rs.Next() {
+		 if rs.Data("JobType")=$$$WDTYPE||(rs.Data("Routine")["SHDWCBLK") {
+			 set ret=$zf(-1,"c:\temp\setpriority.exe "_rs.Data("Pid"))
+			 do ##class(%ZCommon.Log).Log("INFO","%ZSTART","pid "_rs.Data("Pid")_" のIO優先度をVery lowに変更しました ret="_ret)
+		 }
+	 }
+ }
+ quit
+JOB
+ do ##class(%ZUtils.Monitor).Start(0)
+ quit
+]]></Routine>
+</Export>
